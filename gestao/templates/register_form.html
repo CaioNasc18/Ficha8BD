@@ -1,0 +1,33 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+<nav>
+    <h2>MedClinic 360</h2>
+    <ul>
+    <li><a href="{% url 'index' %}">Início</a></li>
+    <li><a href="{% url 'list_doentes' %}">Doentes</a></li>
+    <li><a href="{% url 'list_consultas' %}">Consultas</a></li>
+    <li><a href="{% url 'register_doente' %}">Registar Doente</a></li>
+    <li><a href="{% url 'register_consulta' %}">Nova Consulta</a></li>
+    </ul>
+</nav>
+
+<section class="hero">
+    <div class="overview" style="padding: 30px; max-width: 700px; margin: 40px auto;">
+        <h1>{{ title }}</h1>
+        <form method="post" novalidate>
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Guardar</button>
+        </form>
+    </div>
+</section>
+</body>
+</html>

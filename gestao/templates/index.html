@@ -1,0 +1,60 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedClinic 360</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+<nav>
+    <h2>MedClinic 360</h2>
+    <ul>
+        <li><a href="{% url 'index' %}">Início</a></li>
+        <li><a href="{% url 'list_doentes' %}">Doentes</a></li>
+        <li><a href="{% url 'list_consultas' %}">Consultas</a></li>
+        <li><a href="{% url 'register_doente' %}">Registar Doente</a></li>
+        <li><a href="{% url 'register_consulta' %}">Nova Consulta</a></li>
+    </ul>
+</nav>
+
+<section class="hero">
+    <div class="texto">
+        <h1>Cuidando do paciente, organizando o consultório.</h1>
+        <p>Gestão integrada de agendamentos, fichas de doentes, históricos de consulta, prescrições, pedidos de exames e pagamentos.</p>
+        <a href="{% url 'register_consulta' %}"><button>Registar nova consulta</button></a>
+    </div>
+</section>
+
+<section class="features">
+    <h2>Funcionalidades previstas</h2>
+    <div class="card-grid">
+        <div class="card">
+            <h3>Gestão de doentes</h3>
+            <p>Crie e consulte fichas completas com dados pessoais e contactos de cada paciente.</p>
+            <a href="{% url 'list_doentes' %}"><button>Ver Doentes</button></a>
+        </div>
+        <div class="card">
+            <h3>Agendamento de consultas</h3>
+            <p>Registe consultas agendadas e associe-as a doentes individuais.</p>
+            <a href="{% url 'list_consultas' %}"><button>Ver Consultas</button></a>
+        </div>
+        <div class="card">
+            <h3>Registo clínico</h3>
+            <p>Armazene notas livres do médico sobre o estado do doente em cada consulta.</p>
+            <a href="{% url 'register_consulta' %}"><button>Nova Consulta</button></a>
+        </div>
+        <div class="card">
+            <h3>Prescrições e exames</h3>
+            <p>Documente prescrições de medicamentos e pedidos de exames médicos.</p>
+            <a href="{% url 'register_prescricao' %}"><button>Nova Prescrição</button></a>
+        </div>
+    </div>
+</section>
+
+<footer>
+    Página de entrada do sistema de gestão para consultório médico.
+</footer>
+</body>
+</html>

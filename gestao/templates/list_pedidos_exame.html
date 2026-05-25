@@ -1,0 +1,42 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Pedidos de Exame</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+<nav>
+    <h2>MedClinic 360</h2>
+    <ul>
+    <li><a href="{% url 'index' %}">Início</a></li>
+    <li><a href="{% url 'list_doentes' %}">Doentes</a></li>
+    <li><a href="{% url 'list_consultas' %}">Consultas</a></li>
+    <li><a href="{% url 'register_doente' %}">Registar Doente</a></li>
+    <li><a href="{% url 'register_consulta' %}">Nova Consulta</a></li>
+</nav>
+<section class="hero">
+    <div class="overview" style="padding: 30px; max-width: 900px; margin: 40px auto;">
+        <h1>Pedidos de Exame</h1>
+        <table border="1" cellpadding="8" style="width:100%; border-collapse:collapse;">
+            <tr>
+                <th>Consulta ID</th><th>Exame</th><th>Descrição</th>
+            </tr>
+            {% for e in pedidos_exame %}
+            <tr>
+                <td>{{ e.consulta_id }}</td>
+                <td>{{ e.exame }}</td>
+                <td>{{ e.descricao }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="3">Nenhum pedido de exame registado.</td></tr>
+            {% endfor %}
+        </table>
+        <br>
+        <a href="{% url 'register_pedido_exame' %}">+ Novo pedido de exame</a>
+    </div>
+</section>
+</body>
+</html>

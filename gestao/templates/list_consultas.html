@@ -1,0 +1,48 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Consultas</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+<nav>
+    <h2>MedClinic 360</h2>
+    <ul>
+    <li><a href="{% url 'index' %}">Início</a></li>
+    <li><a href="{% url 'list_doentes' %}">Doentes</a></li>
+    <li><a href="{% url 'list_consultas' %}">Consultas</a></li>
+    <li><a href="{% url 'register_doente' %}">Registar Doente</a></li>
+    <li><a href="{% url 'register_consulta' %}">Nova Consulta</a></li>
+    </ul>
+</nav>
+<section class="hero">
+    <div class="overview" style="padding: 30px; max-width: 900px; margin: 40px auto;">
+        <h1>Consultas</h1>
+        <table border="1" cellpadding="8" style="width:100%; border-collapse:collapse;">
+            <tr>
+                <th>Data/Hora</th><th>Doente ID</th><th>Notas</th><th>Pagamento</th>
+            </tr>
+            {% for c in consultas %}
+            <tr>
+                <td>{{ c.data_hora }}</td>
+                <td>{{ c.doente_id }}</td>
+                <td>{{ c.notas }}</td>
+                <td>{{ c.valor_pagamento }}</td>
+                <td>
+                <a href="{% url 'edit_consulta' c.id %}"> Editar</a>
+                <a href="{% url 'delete_consulta' c.id %}"> Apagar</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4">Nenhuma consulta registada.</td></tr>
+            {% endfor %}
+        </table>
+        <br>
+        <a href="{% url 'register_consulta' %}">+ Nova consulta</a>
+    </div>
+</section>
+</body>
+</html>

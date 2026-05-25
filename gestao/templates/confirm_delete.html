@@ -1,0 +1,32 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>Confirmar Eliminação</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+<nav>
+    <h2>MedClinic 360</h2>
+    <ul>
+        <li><a href="{% url 'index' %}">Início</a></li>
+        <li><a href="{% url 'list_doentes' %}">Doentes</a></li>
+        <li><a href="{% url 'list_consultas' %}">Consultas</a></li>
+        <li><a href="{% url 'register_doente' %}">Registar Doente</a></li>
+        <li><a href="{% url 'register_consulta' %}">Nova Consulta</a></li>
+    </ul>
+</nav>
+<section class="hero">
+    <div class="overview" style="padding: 30px; max-width: 500px; margin: 40px auto;">
+        <h1>Confirmar Eliminação</h1>
+        <p>Tem a certeza que quer eliminar <strong>{{ objeto }}</strong>?</p>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit">Sim, eliminar</button>
+            <a href="{% url cancel_url %}">Cancelar</a>
+        </form>
+    </div>
+</section>
+</body>
+</html>

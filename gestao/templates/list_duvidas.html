@@ -1,0 +1,49 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Dúvidas</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+<nav>
+    <h2>MedClinic 360</h2>
+    <ul>
+    <li><a href="{% url 'index' %}">Início</a></li>
+    <li><a href="{% url 'list_utilizadores' %}">Utilizadores</a></li>
+    <li><a href="{% url 'list_duvidas' %}">Dúvidas</a></li>
+    <li><a href="{% url 'list_pedidos_exame' %}">Pedidos</a></li>
+    </ul>
+</nav>
+<section class="hero">
+    <div class="overview" style="padding: 30px; max-width: 900px; margin: 40px auto;">
+        <h1>Dúvidas</h1>
+        <table border="1" cellpadding="8" style="width:100%; border-collapse:collapse;">
+            <tr>
+                <th>ID</th><th>Assunto</th><th>Criador</th><th>Responsável</th><th>Estado</th><th>Ações</th>
+            </tr>
+            {% for d in duvidas %}
+            <tr>
+                <td>{{ d.pk }}</td>
+                <td>{{ d.assunto }}</td>
+                <td>{{ d.criador }}</td>
+                <td>{{ d.responsavel }}</td>
+                <td>{{ d.estado }}</td>
+                <td>
+                    <a href="{% url 'detail_duvida' d.pk %}">Abrir</a> |
+                    <a href="{% url 'edit_duvida' d.pk %}">Editar</a> |
+                    <a href="{% url 'delete_duvida' d.pk %}">Eliminar</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="6">Nenhuma dúvida registada.</td></tr>
+            {% endfor %}
+        </table>
+        <br>
+        <a href="{% url 'register_duvida' %}"><button>Criar dúvida</button></a>
+    </div>
+</section>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <html lang="pt">
 <head>
     <meta charset="UTF-8">
-    <title>Confirmar Eliminação</title>
+    <title>Confirmar Exclusão</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
@@ -11,20 +11,23 @@
     <h2>MedClinic 360</h2>
     <ul>
         <li><a href="{% url 'index' %}">Início</a></li>
-        <li><a href="{% url 'list_doentes' %}">Doentes</a></li>
-        <li><a href="{% url 'list_consultas' %}">Consultas</a></li>
-        <li><a href="{% url 'register_doente' %}">Registar Doente</a></li>
-        <li><a href="{% url 'register_consulta' %}">Nova Consulta</a></li>
+        <li><a href="{% url 'list_utilizadores' %}">Utilizadores</a></li>
+        <li><a href="{% url 'list_duvidas' %}">Dúvidas</a></li>
+        <li><a href="{% url 'list_pedidos_exame' %}">Pedidos</a></li>
     </ul>
 </nav>
 <section class="hero">
     <div class="overview" style="padding: 30px; max-width: 500px; margin: 40px auto;">
         <h1>Confirmar Eliminação</h1>
-        <p>Tem a certeza que quer eliminar <strong>{{ objeto }}</strong>?</p>
+        <p>Tem a certeza que quer eliminar <strong>{{ object }}</strong>?</p>
         <form method="post">
             {% csrf_token %}
-            <button type="submit">Sim, eliminar</button>
+            <button type="submit">Confirmar</button>
+            {% if cancel_url %}
             <a href="{% url cancel_url %}">Cancelar</a>
+            {% else %}
+            <a href="{% url 'index' %}">Cancelar</a>
+            {% endif %}
         </form>
     </div>
 </section>

@@ -8,53 +8,101 @@
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
+
 <nav>
     <h2>MedClinic 360</h2>
     <ul>
         <li><a href="{% url 'index' %}">Início</a></li>
-        <li><a href="{% url 'list_doentes' %}">Doentes</a></li>
-        <li><a href="{% url 'list_consultas' %}">Consultas</a></li>
-        <li><a href="{% url 'register_doente' %}">Registar Doente</a></li>
-        <li><a href="{% url 'register_consulta' %}">Nova Consulta</a></li>
+        <li><a href="{% url 'list_utilizadores' %}">Utilizadores</a></li>
+        <li><a href="{% url 'list_duvidas' %}">Dúvidas</a></li>
+        <li><a href="{% url 'list_pedidos_exame' %}">Pedidos</a></li>
     </ul>
 </nav>
 
 <section class="hero">
     <div class="texto">
-        <h1>Cuidando do paciente, organizando o consultório.</h1>
-        <p>Gestão integrada de agendamentos, fichas de doentes, históricos de consulta, prescrições, pedidos de exames e pagamentos.</p>
-        <a href="{% url 'register_consulta' %}"><button>Registar nova consulta</button></a>
+        <h1>MedClinic 360 — Gestão de Utilizadores e Processos</h1>
+
+        <p>
+            Sistema de gestão para pedidos de exames, dúvidas internas, utilizadores e anexos.
+        </p>
+
+        <a href="{% url 'list_utilizadores' %}">
+            <button>Ver Utilizadores</button>
+        </a>
+
     </div>
 </section>
 
 <section class="features">
-    <h2>Funcionalidades previstas</h2>
-    <div class="card-grid">
-        <div class="card">
-            <h3>Gestão de doentes</h3>
-            <p>Crie e consulte fichas completas com dados pessoais e contactos de cada paciente.</p>
-            <a href="{% url 'list_doentes' %}"><button>Ver Doentes</button></a>
-        </div>
-        <div class="card">
-            <h3>Agendamento de consultas</h3>
-            <p>Registe consultas agendadas e associe-as a doentes individuais.</p>
-            <a href="{% url 'list_consultas' %}"><button>Ver Consultas</button></a>
-        </div>
-        <div class="card">
-            <h3>Registo clínico</h3>
-            <p>Armazene notas livres do médico sobre o estado do doente em cada consulta.</p>
-            <a href="{% url 'register_consulta' %}"><button>Nova Consulta</button></a>
-        </div>
-        <div class="card">
-            <h3>Prescrições e exames</h3>
-            <p>Documente prescrições de medicamentos e pedidos de exames médicos.</p>
-            <a href="{% url 'register_prescricao' %}"><button>Nova Prescrição</button></a>
-        </div>
-    </div>
+
+<h2>Áreas disponíveis</h2>
+
+<div class="card-grid">
+
+<div class="card">
+
+<h3>Gestão de Utilizadores</h3>
+
+<p>
+Registe, edite e remova utilizadores do sistema com função e empresa associadas.
+</p>
+
+<a href="{% url 'list_utilizadores' %}">
+<button>Ver Utilizadores</button>
+</a>
+
+</div>
+
+<div class="card">
+
+<h3>Gestão de Dúvidas</h3>
+
+<p>
+Registe dúvidas de utilizadores e acompanhe a sua resolução com mensagens.
+</p>
+
+<a href="{% url 'list_duvidas' %}">
+<button>Ver Dúvidas</button>
+</a>
+
+</div>
+
+<div class="card">
+
+<h3>Pedidos de Exame</h3>
+
+<p>
+Crie e acompanhe pedidos de exame, incluindo anexos e histórico de estados.
+</p>
+
+<a href="{% url 'list_pedidos_exame' %}">
+<button>Ver Pedidos</button>
+</a>
+
+</div>
+
+<div class="card">
+
+<h3>Anexos e ficheiros</h3>
+
+<p>
+Anexe documentos e acompanhe os ficheiros relacionados com cada pedido.
+</p>
+
+<a href="{% url 'list_pedidos_exame' %}">
+<button>Ver Pedidos</button>
+</a>
+
+</div>
+
+</div>
+
 </section>
 
 <footer>
-    Página de entrada do sistema de gestão para consultório médico.
+Página de entrada do sistema de gestão para consultório médico.
 </footer>
+
 </body>
 </html>

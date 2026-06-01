@@ -12,10 +12,9 @@
     <h2>MedClinic 360</h2>
     <ul>
     <li><a href="{% url 'index' %}">Início</a></li>
-    <li><a href="{% url 'list_doentes' %}">Doentes</a></li>
-    <li><a href="{% url 'list_consultas' %}">Consultas</a></li>
-    <li><a href="{% url 'register_doente' %}">Registar Doente</a></li>
-    <li><a href="{% url 'register_consulta' %}">Nova Consulta</a></li>
+    <li><a href="{% url 'list_utilizadores' %}">Utilizadores</a></li>
+    <li><a href="{% url 'list_duvidas' %}">Dúvidas</a></li>
+    <li><a href="{% url 'list_pedidos_exame' %}">Pedidos</a></li>
     </ul>
 </nav>
 
@@ -24,8 +23,12 @@
         <h1>{{ title }}</h1>
         <form method="post" novalidate>
             {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit">Guardar</button>
+            {% if form %}
+                {{ form.as_p }}
+                <button type="submit">Salvar</button>
+            {% else %}
+                <p>Formulário temporário — implementação pendente.</p>
+            {% endif %}
         </form>
     </div>
 </section>

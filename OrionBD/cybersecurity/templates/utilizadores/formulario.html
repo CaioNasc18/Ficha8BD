@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>{% if utilizador %}Editar{% else %}Criar{% endif %} Utilizador</title>
+</head>
+<body>
+    <h2>{% if utilizador %}Editar Utilizador (ID: {{ utilizador.id_Utilizador }}){% else %}Novo Utilizador{% endif %}</h2>
+    
+    <form method="POST">
+        {% csrf_token %}
+        
+        <p>
+            <label>Nome:</label><br>
+            <input type="text" name="name" value="{{ utilizador.name|default:'' }}" required>
+        </p>
+        
+        <p>
+            <label>Email:</label><br>
+            <input type="email" name="email" value="{{ utilizador.email|default:'' }}" required>
+        </p>
+
+        {% if not utilizador %}
+        <p>
+            <label>Palavra-passe:</label><br>
+            <input type="password" name="password" required>
+        </p>
+        {% endif %}
+        
+        <p>
+            <label>Telefone:</label><br>
+            <input type="text" name="telephone" value="{{ utilizador.telephone|default:'' }}">
+        </p>
+        
+        <p>
+            <label>Ativo:</label>
+            <input type="checkbox" name="active" {% if utilizador.active %}checked{% endif %}>
+        </p>
+        
+        <p>
+            <label>Tipo de Utilizador:</label><br>
+            <select name="id_tipo" required>
+                <option value="">-- Selecione um Tipo --</option>
+                {% for tipo in tipos %}
+                    <option value="{{ tipo.id_tipo }}" {% if utilizador.id_tipo == tipo.id_tipo %}selected{% endif %}>
+                        {{ tipo.designacao }}
+                    </option>
+                {% endfor %}
+            </select>
+        </p>
+        
+    <p>
+    <label>Empresa:</label><br>
+    <select name="id_empresa" required>
+        <option value="">-- Selecione uma Empresa --</option>
+        {% for emp in empresas %}
+            <option value="{{ emp.id_empresa }}" {% if utilizador.id_empresa == emp.id_empresa %}selected{% endif %}>
+                {{ emp.nome }}
+            </option>
+        {% endfor %}
+    </select>
+</p>
+
+
+
+
+
+        
+        <button type="submit">Gravar Registar</button>
+        <a href="{% url 'lista_utilizadores' %}">Voltar para a Lista</a>
+    </form>
+</body>
+</html>

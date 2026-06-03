@@ -1,3 +1,4 @@
+<<<<<<< HEAD:OrionBD/OrionBD/settings.py
 """
 Django settings for OrionBD project.
 
@@ -10,15 +11,22 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+=======
+from decouple import config
+import dj_database_url
+>>>>>>> a86e2f80008ef9974fb23a0fffb5904412b2e557:projeto/settings.py
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
+<<<<<<< HEAD:OrionBD/OrionBD/settings.py
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
+=======
+>>>>>>> a86e2f80008ef9974fb23a0fffb5904412b2e557:projeto/settings.py
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-s+3mlt$v4*+0ow&#1z2do5sjgb-^22ravh)d@4+tlp_vrsf0@w'
 
@@ -38,6 +46,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'gestao',
 ]
 
 MIDDLEWARE = [
@@ -71,6 +81,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'OrionBD.wsgi.application'
 
 
+<<<<<<< HEAD:OrionBD/OrionBD/settings.py
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
@@ -86,11 +97,27 @@ DATABASES = {
         'PORT': 5432,
         'OPTIONS': dict(parse_qsl(tmpPostgres.query)),
     }
+=======
+# DATABASE NEON
+
+DATABASES = {
+    'default': dj_database_url.parse(
+        config('DATABASE_URL'),
+        conn_max_age=600
+    )
+}
+
+DATABASES['default']['OPTIONS'] = {
+    'sslmode': 'require',
+>>>>>>> a86e2f80008ef9974fb23a0fffb5904412b2e557:projeto/settings.py
 }
 
 
 # Password validation
+<<<<<<< HEAD:OrionBD/OrionBD/settings.py
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
+=======
+>>>>>>> a86e2f80008ef9974fb23a0fffb5904412b2e557:projeto/settings.py
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -109,7 +136,10 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 # Internationalization
+<<<<<<< HEAD:OrionBD/OrionBD/settings.py
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
+=======
+>>>>>>> a86e2f80008ef9974fb23a0fffb5904412b2e557:projeto/settings.py
 
 LANGUAGE_CODE = 'en-us'
 
@@ -120,6 +150,7 @@ USE_I18N = True
 USE_TZ = True
 
 
+<<<<<<< HEAD:OrionBD/OrionBD/settings.py
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
@@ -129,3 +160,19 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+=======
+# Static files
+
+STATIC_URL = 'static/'
+
+
+# Media files
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+
+# Default primary key field type
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+>>>>>>> a86e2f80008ef9974fb23a0fffb5904412b2e557:projeto/settings.py

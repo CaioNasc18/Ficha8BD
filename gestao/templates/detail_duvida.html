@@ -1,0 +1,45 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dúvida #{{ duvida.pk }}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+<nav>
+    <h2>Orion</h2>
+    <ul>
+    <li><a href="{% url 'index' %}">Início</a></li>
+    <li><a href="{% url 'list_duvidas' %}">Dúvidas</a></li>
+    <li><a href="{% url 'list_utilizadores' %}">Utilizadores</a></li>
+    </ul>
+</nav>
+<section class="hero">
+    <div class="overview" style="padding: 30px; max-width: 700px; margin: 40px auto;">
+        <h1>Dúvida: {{ duvida.assunto }}</h1>
+        <p><strong>Criador:</strong> {{ duvida.criador }}</p>
+        <p><strong>Responsável:</strong> {{ duvida.responsavel }}</p>
+        <p><strong>Estado:</strong> {{ duvida.estado }}</p>
+
+        <h2>Mensagens</h2>
+        {% for m in mensagens %}
+            <div style="border:1px solid #ddd; padding:8px; margin-bottom:8px;">
+                <p>{{ m.utilizador }} <small>{{ m.data_envio }}</small></p>
+                <p>{{ m.mensagem }}</p>
+            </div>
+        {% empty %}
+            <p>Sem mensagens ainda.</p>
+        {% endfor %}
+
+        <h3>Adicionar mensagem</h3>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Enviar mensagem</button>
+        </form>
+    </div>
+</section>
+</body>
+</html>

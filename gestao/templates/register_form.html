@@ -1,0 +1,36 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+<nav>
+    <h2>Orion</h2>
+    <ul>
+    <li><a href="{% url 'index' %}">Início</a></li>
+    <li><a href="{% url 'list_utilizadores' %}">Utilizadores</a></li>
+    <li><a href="{% url 'list_duvidas' %}">Dúvidas</a></li>
+    <li><a href="{% url 'list_pedidos_exame' %}">Pedidos</a></li>
+    </ul>
+</nav>
+
+<section class="hero">
+    <div class="overview" style="padding: 30px; max-width: 700px; margin: 40px auto;">
+        <h1>{{ title }}</h1>
+        <form method="post" novalidate>
+            {% csrf_token %}
+            {% if form %}
+                {{ form.as_p }}
+                <button type="submit">Salvar</button>
+            {% else %}
+                <p>Formulário temporário — implementação pendente.</p>
+            {% endif %}
+        </form>
+    </div>
+</section>
+</body>
+</html>

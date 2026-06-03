@@ -1,3 +1,4 @@
+
 """
 Django settings for OrionBD project.
 
@@ -9,7 +10,7 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
-
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -31,7 +32,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'cybersecurity'
+    'cybersecurity',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -39,7 +40,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'gestao',
 ]
 
 MIDDLEWARE = [
@@ -76,17 +76,17 @@ WSGI_APPLICATION = 'OrionBD.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-tmpPostgres = urlparse(os.getenv("DATABASE_URL"))
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': tmpPostgres.path.replace('/', ''),
-        'USER': tmpPostgres.username,
-        'PASSWORD': tmpPostgres.password,
-        'HOST': tmpPostgres.hostname,
-        'PORT': 5432,
-        'OPTIONS': dict(parse_qsl(tmpPostgres.query)),
+        'NAME': 'neondb',
+        'USER': 'neondb_owner',
+        'PASSWORD': 'npg_4FerV7NLxBMH',
+        'HOST': 'ep-empty-frog-apqmqjr0-pooler.c-7.us-east-1.aws.neon.tech',
+        'PORT': '5432',
+        'OPTIONS': {
+        'sslmode': 'require',
+        },
     }
 }
 

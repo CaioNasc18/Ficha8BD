@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>{% if pedido %}Editar{% else %}Criar{% endif %} Pedido</title>
+</head>
+<body>
+    <h2>{% if pedido %}Editar Pedido (ID: {{ pedido.id }}){% else %}Novo Pedido{% endif %}</h2>
+    
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <p>
+            <label>Título do Pedido:</label><br>
+            <input type="text" name="title" value="{{ pedido.title|default:'' }}" required>
+        </p>
+        
+        <p>
+            <label>Descrição:</label><br>
+            <textarea name="description" rows="4" cols="40" required>{{ pedido.description|default:'' }}</textarea>
+        </p>
+
+        <p>
+            <label>Tipo de Pedido:</label><br>
+            <select name="id_tipo_pedido" required>
+                <option value="">-- Selecione um Tipo --</option>
+                {% for tipo in tipos_pedido %}
+                    <option value="{{ tipo.id_tipo_pedido }}" {% if pedido.id_tipo_pedido == tipo.id_tipo_pedido %}selected{% endif %}>
+                        {{ tipo.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </p>
+
+        <p>
+            <label>Estado:</label><br>
+            <select name="status" required>
+                <option value="open" {% if pedido.status == 'open' %}selected{% endif %}>Pendente / Aberto</option>
+                <option value="in_progress" {% if pedido.status == 'in_progress' %}selected{% endif %}>Em Processo</option>
+                <option value="closed" {% if pedido.status == 'closed' %}selected{% endif %}>Concluído / Fechado</option>
+            </select>
+        </p>
+
+        <p>
+            <label>Criado por (Utilizador):</label><br>
+            <select name="creator_id" required>
+                <option value="">-- Selecione o Criador --</option>
+                {% for u in utilizadores %}
+                    <option value="{{ u.id_Utilizador }}" {% if pedido.creator_id == u.id_Utilizador %}selected{% endif %}>
+                        {{ u.name }} ({% firstof u.email 'Sem Email' %})
+                    </option>
+                {% endfor %}
+            </select>
+        </p>
+
+        <p>
+            <label>Atribuir a (Técnico/Analista):</label><br>
+            <select name="assigned_to_id">
+                <option value="">-- Não Atribuído (Nenhum) --</option>
+                {% for u in utilizadores %}
+                    <option value="{{ u.id_Utilizador }}" {% if pedido.assigned_to_id == u.id_Utilizador %}selected{% endif %}>
+                        {{ u.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </p>
+        
+        <hr>
+        <h3>Anexar Ficheiro (RequestFiles)</h3>
+        {% if ficheiros %}
+            <p><strong>Ficheiros já associados:</strong></p>
+            <ul>
+                {% for f in ficheiros %}
+                    <li>
+                        <a href="{{ f.filePath }}" target="_blank">{{ f.fileName }}</a> 
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        
+        <p>
+            <label>Selecionar Novo Ficheiro:</label><br>
+            <input type="file" name="pedido_ficheiro">
+        </p>
+        <hr>
+        
+        <button type="submit">Gravar Pedido</button>
+        <a href="{% url 'lista_pedidos' %}">Voltar para a Lista</a>
+    </form>
+</body>
+</html>

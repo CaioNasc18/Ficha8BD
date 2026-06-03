@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Pedidos</title>
+</head>
+<body>
+    <h2>Pedidos Registados</h2>
+    <p><a href="{% url 'criar_pedido' %}">[+] Criar Novo Pedido</a></p>
+    
+    <table border="1" cellpadding="5" cellspacing="0">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Título</th>
+                <th>Descrição</th>
+                <th>Estado</th>
+                <th>Criado Em</th>
+                <th>Ficheiros Anexados</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for req in pedidos %}
+            <tr>
+                <td>{{ req.id }}</td>
+                <td><strong>{{ req.title }}</strong></td>
+                <td>{{ req.description|truncatewords:10 }}</td>
+                <td>
+                    {% if req.status == 'open' %}
+                        <span style="color: #007bff; font-weight: bold;">Aberto</span>
+                    {% elif req.status == 'in_progress' %}
+                        <span style="color: #ffc107; font-weight: bold;">Em Processo</span>
+                    {% elif req.status == 'closed' %}
+                        <span style="color: #28a745; font-weight: bold;">Fechado</span>
+                    {% else %}
+                        {{ req.status }}
+                    {% endif %}
+                </td>
+                <td>{{ req.created_at }}</td>
+                <td>
+                    {% if req.total_ficheiros %}
+                        <span>{{ req.total_ficheiros }} ficheiro(s)</span>
+                    {% else %}
+                        <small style="color: gray;">Nenhum</small>
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="{% url 'editar_pedido' req.id %}">Editar</a> | 
+                    <a href="{% url 'apagar_pedido' req.id %}" onclick="return confirm('Tem a certeza que deseja eliminar este pedido?');">Apagar</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7">Nenhum pedido encontrado na base de dados.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <p>
+        <br>
+        <a href="{% url 'lista_utilizadores' %}">Ir para Gestão de Utilizadores</a> | 
+        <a href="{% url 'menu_principal' %}" style="font-weight: bold;">Voltar ao Menu Inicial</a>
+    </p>
+</body>
+</html>

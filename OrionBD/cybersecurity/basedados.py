@@ -86,3 +86,129 @@ def eliminar_utilizador(id_utilizador):
     """Remove permanentemente o utilizador da tabela 'Users'"""
     with connection.cursor() as cursor:
         cursor.execute('DELETE FROM "Users" WHERE "id_Utilizador" = %s;', [id_utilizador])
+
+# =====================================================================
+# 1. TABELAS AUXILIARES
+# =====================================================================
+
+def listar_tipos_pedido():
+    """Procura os tipos de pedido na tabela 'RequestTypes'"""
+    with connection.cursor() as cursor:
+        cursor.execute('SELECT id AS id_tipo_pedido, name FROM public."RequestTypes";')
+        colunas = [col.name for col in cursor.description]
+        return [dict(zip(colunas, linha)) for linha in cursor.fetchall()]
+
+
+# =====================================================================
+# 2. CRUD DA TABELA REQUESTS (TOTALMENTE ALINHADO COM O ESQUEMA REAL)
+# =====================================================================
+
+# C - CREATE
+def criar_pedido(title, description, status, creator_id, id_tipo_pedido=None, assigned_to_id=None):
+    """Insere um novo pedido com chaves estrangeiras dinâmicas e limpa o contador de IDs"""
+    with connection.cursor() as cursor:
+        # Sincroniza a sequência automática para evitar o IntegrityError
+        cursor.execute('SELECT setval(pg_get_serial_sequence(\'public.requests\', \'id\'), COALESCE(MAX(id), 1)) FROM public.requests;')
+        
+        cursor.execute(
+            """
+            INSERT INTO public.requests ("subject", "description", "status", "openedAt", "creatorId", "requestTypeId", "assignedToId")
+            VALUES (%s, %s, %s, NOW(), %s, %s, %s)
+            RETURNING id;
+            """,
+            [title, description, status, creator_id, id_tipo_pedido, assigned_to_id]
+        )
+        return cursor.fetchone()[0]
+# R - READ ALL
+def listar_todos_pedidos():
+    """Lista todos os pedidos mapeando os campos para o padrão do HTML"""
+    with connection.cursor() as cursor:
+        cursor.execute(
+            """
+            SELECT id, "subject" AS title, "description", "status", "openedAt" AS created_at, "creatorId" AS user_id 
+            FROM public.requests;
+            """
+        )
+        colunas = [col.name for col in cursor.description]
+        return [dict(zip(colunas, linha)) for linha in cursor.fetchall()]
+
+# R - READ ONE (Modificado para trazer os IDs de associação)
+def obter_pedido_por_id(id_pedido):
+    """Procura um pedido específico trazendo os IDs de criador e designado"""
+    with connection.cursor() as cursor:
+        cursor.execute(
+            """
+            SELECT id, "subject" AS title, "description", "status", "openedAt" AS created_at, 
+                   "creatorId" AS creator_id, "requestTypeId" AS id_tipo_pedido, "assignedToId" AS assigned_to_id
+            FROM public.requests 
+            WHERE id = %s;
+            """, 
+            [id_pedido]
+        )
+        linha = cursor.fetchone()
+        if linha:
+            colunas = [col.name for col in cursor.description]
+            return dict(zip(colunas, linha))
+        return None
+
+# U - UPDATE
+def atualizar_pedido(id_pedido, title, description, status, id_tipo_pedido=None, creator_id=None, assigned_to_id=None):
+    """Atualiza todas as propriedades e chaves estrangeiras de um pedido"""
+    with connection.cursor() as cursor:
+        cursor.execute(
+            """
+            UPDATE public.requests
+            SET "subject" = %s, "description" = %s, "status" = %s, 
+                "requestTypeId" = %s, "creatorId" = %s, "assignedToId" = %s
+            WHERE id = %s;
+            """,
+            [title, description, status, id_tipo_pedido, creator_id, assigned_to_id, id_pedido]
+        )
+
+# D - DELETE
+def eliminar_pedido(id_pedido):
+    """Remove permanentemente o pedido"""
+    with connection.cursor() as cursor:
+        cursor.execute('DELETE FROM public.requests WHERE id = %s;', [id_pedido])
+
+
+
+# =====================================================================
+# 3. CRUD DA TABELA DE FICHEIROS (REQUESTFILES - IMAGEM 2)
+# =====================================================================
+
+# C - CREATE (Upload de Ficheiro)
+def adicionar_ficheiro_pedido(file_name, file_path, request_id):
+    """Insere um novo ficheiro associado a um pedido (RequestFiles)"""
+    with connection.cursor() as cursor:
+        cursor.execute(
+            """
+            INSERT INTO public."RequestFiles" ("fileName", "filePath", "uploadedAt", "requestId")
+            VALUES (%s, %s, NOW(), %s);
+            """,
+            [file_name, file_path, request_id]
+        )
+
+# R - READ ALL BY REQUEST (Listar ficheiros de um pedido)
+def listar_ficheiros_de_pedido(id_pedido):
+    """Procura todos os ficheiros associados a um pedido específico"""
+    with connection.cursor() as cursor:
+        cursor.execute(
+            """
+            SELECT id, "fileName", "filePath", "uploadedAt", "requestId"
+            FROM public."RequestFiles"
+            WHERE "requestId" = %s;
+            """,
+            [id_pedido]
+        )
+        # CORREÇÃO: Usar fetchall() porque um pedido pode ter vários ficheiros,
+        # e mapear corretamente cada linha obtida da BD.
+        linhas = cursor.fetchall()
+        colunas = [col.name for col in cursor.description]
+        return [dict(zip(colunas, row)) for row in linhas]
+
+# D - DELETE (Remover Ficheiro)
+def eliminar_ficheiro_pedido(id_ficheiro):
+    """Remove o registo de um ficheiro específico da base de dados"""
+    with connection.cursor() as cursor:
+        cursor.execute('DELETE FROM public."RequestFiles" WHERE id = %s;', [id_ficheiro])

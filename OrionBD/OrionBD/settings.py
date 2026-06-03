@@ -84,8 +84,10 @@ DATABASES = {
         'PASSWORD': 'npg_4FerV7NLxBMH',
         'HOST': 'ep-empty-frog-apqmqjr0-pooler.c-7.us-east-1.aws.neon.tech',
         'PORT': '5432',
+        'AUTOCOMMIT': True,       # Grava permanentemente cada Query de imediato
+        'CONN_MAX_AGE': 0,        # Fecha a conexão após o pedido para limpar a cache do pooler
         'OPTIONS': {
-        'sslmode': 'require',
+            'sslmode': 'require',
         },
     }
 }

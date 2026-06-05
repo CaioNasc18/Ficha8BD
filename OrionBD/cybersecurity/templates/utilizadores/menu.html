@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt">
+
 <head>
     <meta charset="UTF-8">
     <title>Painel de Controle - OrionBD</title>
@@ -9,24 +10,28 @@
             margin: 40px;
             background-color: #f4f6f9;
         }
+
         .container {
             max-width: 600px;
             margin: 0 auto;
             background: white;
             padding: 30px;
             border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
+
         h2 {
             color: #333;
             text-align: center;
             margin-bottom: 30px;
         }
+
         .menu-options {
             display: flex;
             flex-direction: column;
             gap: 15px;
         }
+
         .btn-link {
             display: block;
             padding: 15px;
@@ -39,32 +44,41 @@
             font-weight: bold;
             transition: background 0.2s;
         }
+
         .btn-link:hover {
             background-color: #0056b3;
         }
+
         .btn-secondary {
             background-color: #28a745;
         }
+
         .btn-secondary:hover {
             background-color: #218838;
         }
     </style>
 </head>
+
 <body>
 
     <div class="container">
         <h2>OrionBD - Sistema de Gestão</h2>
-        
+
         <div class="menu-options">
             <a href="{% url 'lista_utilizadores' %}" class="btn-link">
-                👤 Gerir Utilizadores (lista.html)
+                Gerir Utilizadores (lista.html)
             </a>
-            
+
             <a href="{% url 'lista_pedidos' %}" class="btn-link btn-secondary">
-                📋 Gerir Pedidos / Requests (requestlist.html)
+                Gerir Pedidos / Requests (requestlist.html)
+            </a>
+
+            <a href="{% url 'empresas' %}" class="btn-link btn-secondary">
+                Gerir Empresas (empresas.html)
             </a>
         </div>
     </div>
 
 </body>
+
 </html>

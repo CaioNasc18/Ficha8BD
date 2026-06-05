@@ -212,3 +212,84 @@ def eliminar_ficheiro_pedido(id_ficheiro):
     """Remove o registo de um ficheiro específico da base de dados"""
     with connection.cursor() as cursor:
         cursor.execute('DELETE FROM public."RequestFiles" WHERE id = %s;', [id_ficheiro])
+
+# =====================================================================
+# 3. CRUD DA TABELA DE EMPRESAS 
+# =====================================================================
+
+from django.db import connection
+
+def obter_todas_empresas():
+    """Retorna uma lista com todas as empresas da tabela companies"""
+    with connection.cursor() as cursor:
+        cursor.execute(
+            """
+            SELECT id, nome, "nomeResponsavelSeg", "emailResponsavelSeg", 
+                   "telefoneResponsavelSeg", "nomeContactoPerm", 
+                   "emailContactoPerm", "telefoneContactoPerm"
+            FROM companies; -- <--- Atualizado aqui
+            """
+        )
+        return cursor.fetchall()
+
+def criar_empresa(nome, nomeResponsavelSeg, emailResponsavelSeg, telefoneResponsavelSeg, nomeContactoPerm, emailContactoPerm, telefoneContactoPerm):
+    """Insere uma nova empresa na tabela companies"""
+    with connection.cursor() as cursor:
+        cursor.execute(
+            """
+            INSERT INTO companies ( -- <--- Atualizado aqui
+                nome, "nomeResponsavelSeg", "emailResponsavelSeg", 
+                "telefoneResponsavelSeg", "nomeContactoPerm", 
+                "emailContactoPerm", "telefoneContactoPerm"
+            )
+            VALUES (%s, %s, %s, %s, %s, %s, %s);
+            """,
+            [nome, nomeResponsavelSeg, emailResponsavelSeg, telefoneResponsavelSeg, nomeContactoPerm, emailContactoPerm, telefoneContactoPerm]
+        )
+        
+connection.commit()
+
+def obter_empresa_por_id(id_empresa):
+    """Retorna os dados de uma empresa específica da tabela companies"""
+    with connection.cursor() as cursor:
+        cursor.execute(
+            """
+            SELECT id, nome, "nomeResponsavelSeg", "emailResponsavelSeg", 
+                   "telefoneResponsavelSeg", "nomeContactoPerm", 
+                   "emailContactoPerm", "telefoneContactoPerm"
+            FROM companies -- <--- Atualizado aqui
+            WHERE id = %s;
+            """,
+            [id_empresa]
+        )
+        return cursor.fetchone()
+
+def atualizar_empresa(id_empresa, nome, nomeResponsavelSeg, emailResponsavelSeg, telefoneResponsavelSeg, nomeContactoPerm, emailContactoPerm, telefoneContactoPerm):
+    """Atualiza os dados de uma empresa na tabela companies"""
+    with connection.cursor() as cursor:
+        cursor.execute(
+            """
+            UPDATE companies -- <--- Atualizado aqui
+            SET 
+                nome = %s,
+                "nomeResponsavelSeg" = %s,
+                "emailResponsavelSeg" = %s,
+                "telefoneResponsavelSeg" = %s,
+                "nomeContactoPerm" = %s,
+                "emailContactoPerm" = %s,
+                "telefoneContactoPerm" = %s
+            WHERE id = %s;
+            """,
+            [nome, nomeResponsavelSeg, emailResponsavelSeg, telefoneResponsavelSeg, nomeContactoPerm, emailContactoPerm, telefoneContactoPerm, id_empresa]
+        )
+
+def eliminar_empresa(id_empresa):
+    """Elimina uma empresa da tabela companies através do ID"""
+    with connection.cursor() as cursor:
+        cursor.execute(
+            """
+            DELETE FROM companies -- <--- Atualizado aqui
+            WHERE id = %s;
+            """,
+            [id_empresa]
+        )

@@ -1,12 +1,14 @@
 from django.shortcuts import render, redirect
 from django.http import Http404
+from django.contrib import messages
 from .basedados import (
     # Métodos dos Utilizadores
     listar_todos_utilizadores, obtener_utilizador_por_id, criar_utilizador,
     atualizar_utilizador, eliminar_utilizador, listar_tipos_utilizador, listar_empresas,
     # Métodos dos Pedidos (Requests)
     listar_tipos_pedido, criar_pedido, listar_todos_pedidos, obter_pedido_por_id,
-    atualizar_pedido, eliminar_pedido, adicionar_ficheiro_pedido, listar_ficheiros_de_pedido
+    # Métodos das Empresas
+    obter_todas_empresas, criar_empresa, obter_empresa_por_id, atualizar_empresa, eliminar_empresa, listar_empresas,
 )
 
 # =====================================================================
@@ -131,3 +133,69 @@ def gerir_pedido(request, id_pedido=None):
 def apagar_pedido(request, id_pedido):
     eliminar_pedido(id_pedido)
     return redirect('lista_pedidos')
+
+#EMPRESAS
+
+# 1. LISTAR EMPRESAS
+def listar_empresas(request):
+    # obter_todas_empresas() é a função SQL que devolve o fetchall()
+    empresas_do_banco = obter_todas_empresas() 
+    
+    return render(request, 'utilizadores/empresas.html', {'empresas': empresas_do_banco})
+
+
+# 2. CRIAR EMPRESA
+def criar_empresa_view(request):
+    if request.method == "POST":
+        nome = request.POST.get('nome')
+        nomeResponsavelSeg = request.POST.get('nomeResponsavelSeg')
+        emailResponsavelSeg = request.POST.get('emailResponsavelSeg')
+        telefoneResponsavelSeg = request.POST.get('telefoneResponsavelSeg')
+        nomeContactoPerm = request.POST.get('nomeContactoPerm')
+        emailContactoPerm = request.POST.get('emailContactoPerm')
+        telefoneContactoPerm = request.POST.get('telefoneContactoPerm')
+        
+        # Chama a tua função SQL de inserção
+        criar_empresa(nome, nomeResponsavelSeg, emailResponsavelSeg, telefoneResponsavelSeg, nomeContactoPerm, emailContactoPerm, telefoneContactoPerm)
+        
+        messages.success(request, "Empresa criada com sucesso!")
+        return redirect('empresas') # Redireciona para a lista
+        
+    # CORREÇÃO DEFINITIVA: Nome exato do teu ficheiro HTML
+    return render(request, 'utilizadores/criar_empresa.html')
+
+
+# 3. EDITAR EMPRESA
+def editar_empresa_view(request, id_empresa):
+    # Vai buscar os dados atuais da empresa para preencher o formulário
+    empresa = obter_empresa_por_id(id_empresa)
+    
+    if not empresa:
+        messages.error(request, "Empresa não encontrada.")
+        return redirect('empresas')
+
+    if request.method == "POST":
+        nome = request.POST.get('nome')
+        nomeResponsavelSeg = request.POST.get('nomeResponsavelSeg')
+        emailResponsavelSeg = request.POST.get('emailResponsavelSeg')
+        telefoneResponsavelSeg = request.POST.get('telefoneResponsavelSeg')
+        nomeContactoPerm = request.POST.get('nomeContactoPerm')
+        emailContactoPerm = request.POST.get('emailContactoPerm')
+        telefoneContactoPerm = request.POST.get('telefoneContactoPerm')
+        
+        # Chama a tua função SQL de UPDATE
+        atualizar_empresa(id_empresa, nome, nomeResponsavelSeg, emailResponsavelSeg, telefoneResponsavelSeg, nomeContactoPerm, emailContactoPerm, telefoneContactoPerm)
+        
+        messages.success(request, "Empresa atualizada com sucesso!")
+        return redirect('empresas')
+
+    return render(request, 'utilizadores/empresas.html', {'empresa': empresa})
+
+
+# 4. APAGAR EMPRESA
+def apagar_empresa_view(request, id_empresa):
+    eliminar_empresa(id_empresa)
+    messages.success(request, "Empresa eliminada com sucesso!")
+    return redirect('empresas')
+
+

@@ -16,9 +16,7 @@ def listar_empresas():
     with connection.cursor() as cursor:
         cursor.execute("SELECT id AS id_empresa, nome FROM companies;")
         colunas = [col.name for col in cursor.description]
-        # CORRIGIDO: mudou 'tabular' para 'linha' para bater certo com o zip
         return [dict(zip(colunas, linha)) for linha in cursor.fetchall()]
-
 
 
 # =====================================================================
@@ -27,15 +25,16 @@ def listar_empresas():
 
 # C - CREATE
 def criar_utilizador(email, password, name, telephone, active, id_tipo, id_empresa):
-    """Insere um novo utilizador respeitando a estrutura de tipos exata"""
+    """Insere um novo utilizador salvaguardando a sensibilidade de maiúsculas"""
     with connection.cursor() as cursor:
         cursor.execute(
             """
             INSERT INTO "Users" (email, password, name, telephone, active, "Date_created", id_tipo, id_empresa)
-            VALUES (%s, %s, %s, %s, %s, NOW(), %s, %s);
+            VALUES (%s, %s, %s, %s, %s::boolean, NOW(), %s, %s);
             """,
             [email, password, name, telephone, active, id_tipo, id_empresa]
         )
+        connection.commit()
 
 # R - READ ALL
 def listar_todos_utilizadores():
@@ -75,20 +74,23 @@ def atualizar_utilizador(id_utilizador, email, name, telephone, active, id_tipo,
         cursor.execute(
             """
             UPDATE "Users"
-            SET email = %s, name = %s, telephone = %s, active = %s, id_tipo = %s, id_empresa = %s
+            SET email = %s, name = %s, telephone = %s, active = %s::boolean, id_tipo = %s, id_empresa = %s
             WHERE "id_Utilizador" = %s;
             """,
             [email, name, telephone, active, id_tipo, id_empresa, id_utilizador]
         )
+        connection.commit()
 
 # D - DELETE
 def eliminar_utilizador(id_utilizador):
     """Remove permanentemente o utilizador da tabela 'Users'"""
     with connection.cursor() as cursor:
         cursor.execute('DELETE FROM "Users" WHERE "id_Utilizador" = %s;', [id_utilizador])
+        connection.commit()
+
 
 # =====================================================================
-# 1. TABELAS AUXILIARES
+# 3. TABELAS AUXILIARES DE PEDIDOS
 # =====================================================================
 
 def listar_tipos_pedido():
@@ -100,16 +102,14 @@ def listar_tipos_pedido():
 
 
 # =====================================================================
-# 2. CRUD DA TABELA REQUESTS (TOTALMENTE ALINHADO COM O ESQUEMA REAL)
+# 4. CRUD DA TABELA REQUESTS
 # =====================================================================
 
 # C - CREATE
 def criar_pedido(title, description, status, creator_id, id_tipo_pedido=None, assigned_to_id=None):
     """Insere um novo pedido com chaves estrangeiras dinâmicas e limpa o contador de IDs"""
     with connection.cursor() as cursor:
-        # Sincroniza a sequência automática para evitar o IntegrityError
         cursor.execute('SELECT setval(pg_get_serial_sequence(\'public.requests\', \'id\'), COALESCE(MAX(id), 1)) FROM public.requests;')
-        
         cursor.execute(
             """
             INSERT INTO public.requests ("subject", "description", "status", "openedAt", "creatorId", "requestTypeId", "assignedToId")
@@ -118,7 +118,9 @@ def criar_pedido(title, description, status, creator_id, id_tipo_pedido=None, as
             """,
             [title, description, status, creator_id, id_tipo_pedido, assigned_to_id]
         )
+        connection.commit()
         return cursor.fetchone()[0]
+
 # R - READ ALL
 def listar_todos_pedidos():
     """Lista todos os pedidos mapeando os campos para o padrão do HTML"""
@@ -132,7 +134,7 @@ def listar_todos_pedidos():
         colunas = [col.name for col in cursor.description]
         return [dict(zip(colunas, linha)) for linha in cursor.fetchall()]
 
-# R - READ ONE (Modificado para trazer os IDs de associação)
+# R - READ ONE
 def obter_pedido_por_id(id_pedido):
     """Procura um pedido específico trazendo os IDs de criador e designado"""
     with connection.cursor() as cursor:
@@ -164,20 +166,20 @@ def atualizar_pedido(id_pedido, title, description, status, id_tipo_pedido=None,
             """,
             [title, description, status, id_tipo_pedido, creator_id, assigned_to_id, id_pedido]
         )
+        connection.commit()
 
 # D - DELETE
 def eliminar_pedido(id_pedido):
     """Remove permanentemente o pedido"""
     with connection.cursor() as cursor:
         cursor.execute('DELETE FROM public.requests WHERE id = %s;', [id_pedido])
+        connection.commit()
 
-
-
+        # =====================================================================
+# 5. CRUD DA TABELA DE FICHEIROS (REQUESTFILES)
 # =====================================================================
-# 3. CRUD DA TABELA DE FICHEIROS (REQUESTFILES - IMAGEM 2)
-# =====================================================================
 
-# C - CREATE (Upload de Ficheiro)
+# C - CREATE
 def adicionar_ficheiro_pedido(file_name, file_path, request_id):
     """Insere um novo ficheiro associado a um pedido (RequestFiles)"""
     with connection.cursor() as cursor:
@@ -188,27 +190,119 @@ def adicionar_ficheiro_pedido(file_name, file_path, request_id):
             """,
             [file_name, file_path, request_id]
         )
+        connection.commit()
 
-# R - READ ALL BY REQUEST (Listar ficheiros de um pedido)
+# R - READ ALL BY REQUEST
 def listar_ficheiros_de_pedido(id_pedido):
     """Procura todos os ficheiros associados a um pedido específico"""
     with connection.cursor() as cursor:
         cursor.execute(
             """
-            SELECT id, "fileName", "filePath", "uploadedAt", "requestId"
-            FROM public."RequestFiles"
+            SELECT id, "fileName", "filePath", "uploadedAt" 
+            FROM public."RequestFiles" 
             WHERE "requestId" = %s;
             """,
             [id_pedido]
         )
-        # CORREÇÃO: Usar fetchall() porque um pedido pode ter vários ficheiros,
-        # e mapear corretamente cada linha obtida da BD.
-        linhas = cursor.fetchall()
         colunas = [col.name for col in cursor.description]
-        return [dict(zip(colunas, row)) for row in linhas]
+        return [dict(zip(colunas, linha)) for linha in cursor.fetchall()]
 
-# D - DELETE (Remover Ficheiro)
-def eliminar_ficheiro_pedido(id_ficheiro):
-    """Remove o registo de um ficheiro específico da base de dados"""
+
+# =====================================================================
+# 6. INTERROGAÇÕES SQL (SELECT) PARA O DASHBOARD - FICHA 9
+# =====================================================================
+
+def obter_conformidade_nis2():
+    """Query 1: Estado de conformidade NIS2 baseado no responsável de segurança"""
     with connection.cursor() as cursor:
-        cursor.execute('DELETE FROM public."RequestFiles" WHERE id = %s;', [id_ficheiro])
+        cursor.execute(
+            """
+            SELECT 
+                nome as nome_da_empresa,
+                CASE 
+                    WHEN "nomeResponsavelSeg" IS NOT NULL AND "emailResponsavelSeg" IS NOT NULL THEN 'Conforme'
+                    WHEN "emailResponsavelSeg" IS NOT NULL AND "nomeResponsavelSeg" IS NULL THEN 'Em avaliação'
+                    ELSE 'Com pendências'
+                END as estado_nis2
+            FROM public.companies
+            ORDER BY estado_nis2 ASC, nome_da_empresa ASC;
+            """
+        )
+        colunas = [col.name for col in cursor.description]
+        return [dict(zip(colunas, linha)) for linha in cursor.fetchall()]
+
+def obter_top5_incidentes():
+    """Query 2: Top 5 clientes com mais incidentes de segurança (requestTypeId = 1)"""
+    with connection.cursor() as cursor:
+        cursor.execute(
+            """
+            SELECT c.nome as cliente, COUNT(r.id) as total_incidentes
+            FROM public.companies c
+            JOIN public."Users" u ON c.id = u.id_empresa
+            JOIN public.requests r ON u."id_Utilizador" = r."creatorId"
+            WHERE r."requestTypeId" = 1
+            GROUP BY c.id, c.nome
+            ORDER BY total_incidentes DESC
+            LIMIT 5;
+            """
+        )
+        colunas = [col.name for col in cursor.description]
+        return [dict(zip(colunas, linha)) for linha in cursor.fetchall()]
+
+def obter_documentos_por_mes():
+    """Query 3: Total de documentos submetidos por cliente e por mês"""
+    with connection.cursor() as cursor:
+        cursor.execute(
+            """
+            SELECT 
+                c.nome as cliente,
+                TO_CHAR(d."uploadedAt", 'YYYY-MM') as mes,
+                COUNT(d.id) as total_documentos
+            FROM public.companies c
+            JOIN public."Users" u ON c.id = u.id_empresa
+            JOIN public.requests r ON u."id_Utilizador" = r."creatorId"
+            JOIN public."RequestFiles" d ON r.id = d."requestId"
+            GROUP BY c.nome, TO_CHAR(d."uploadedAt", 'YYYY-MM')
+            ORDER BY mes DESC, total_documentos DESC;
+            """
+        )
+        colunas = [col.name for col in cursor.description]
+        return [dict(zip(colunas, linha)) for linha in cursor.fetchall()]
+
+def obter_distribuicao_perfis():
+    """Query 4: Distribuição de utilizadores por perfil mapeado por ID"""
+    with connection.cursor() as cursor:
+        cursor.execute(
+            """
+            SELECT 
+                CASE 
+                    WHEN id_tipo = 1 THEN 'Administrador'
+                    WHEN id_tipo = 2 THEN 'Cliente'
+                    WHEN id_tipo = 3 THEN 'Colaboradores'
+                    ELSE 'Outro'
+                END as perfil,
+                COUNT(*) as total
+            FROM public."Users"
+            GROUP BY id_tipo
+            ORDER BY total DESC;
+            """
+        )
+        colunas = [col.name for col in cursor.description]
+        return [dict(zip(colunas, linha)) for linha in cursor.fetchall()]
+
+def obter_tempo_medio_tickets():
+    """Query 5: Estado dos pedidos/tickets de suporte e tempo médio de resolução"""
+    with connection.cursor() as cursor:
+        cursor.execute(
+            """
+            SELECT 
+                status,
+                COUNT(*) as total,
+                ROUND(AVG(EXTRACT(EPOCH FROM (r."closedAt" - r."openedAt")) / 3600)::numeric, 1) as tempo_medio_horas
+            FROM public.requests r
+            GROUP BY status
+            ORDER BY total DESC;
+            """
+        )
+        colunas = [col.name for col in cursor.description]
+        return [dict(zip(colunas, linha)) for linha in cursor.fetchall()]

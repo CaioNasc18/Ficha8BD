@@ -6,7 +6,10 @@ from .basedados import (
     atualizar_utilizador, eliminar_utilizador, listar_tipos_utilizador, listar_empresas,
     # Métodos dos Pedidos (Requests)
     listar_tipos_pedido, criar_pedido, listar_todos_pedidos, obter_pedido_por_id,
-    atualizar_pedido, eliminar_pedido, adicionar_ficheiro_pedido, listar_ficheiros_de_pedido
+    atualizar_pedido, eliminar_pedido, adicionar_ficheiro_pedido, listar_ficheiros_de_pedido,
+    # Métodos do Dashboard (Ficha 9)
+    obter_conformidade_nis2, obter_top5_incidentes, obter_documentos_por_mes,
+    obter_distribuicao_perfis, obter_tempo_medio_tickets
 )
 
 # =====================================================================
@@ -83,7 +86,7 @@ def listar_pedidos(request):
 def gerir_pedido(request, id_pedido=None):
     """Trata a visualização, criação e edição de pedidos com chaves estrangeiras de utilizadores"""
     tipos_reais = listar_tipos_pedido()
-    utilizadores_reais = listar_todos_utilizadores() # <-- Carrega os utilizadores da BD
+    utilizadores_reais = listar_todos_utilizadores()
     
     pedido_existente = None
     ficheiros_anexados = []
@@ -100,18 +103,14 @@ def gerir_pedido(request, id_pedido=None):
         status = request.POST.get('status')
         id_tipo_pedido = request.POST.get('id_tipo_pedido') or None
         
-        # Captura os IDs dos novos menus drop-down (se vazios, ficam None/Null)
         creator_id = request.POST.get('creator_id') or None
         assigned_to_id = request.POST.get('assigned_to_id') or None
 
         if id_pedido:
-            # Atualização na BD
             atualizar_pedido(id_pedido, title, description, status, id_tipo_pedido, creator_id, assigned_to_id)
         else:
-            # Criação na BD
             id_pedido = criar_pedido(title, description, status, creator_id, id_tipo_pedido, assigned_to_id)
         
-        # Gestão de arquivos
         if request.FILES.get('pedido_ficheiro'):
             ficheiro = request.FILES['pedido_ficheiro']
             file_name = ficheiro.name
@@ -123,11 +122,34 @@ def gerir_pedido(request, id_pedido=None):
     contexto = {
         'pedido': pedido_existente,
         'tipos_pedido': tipos_reais,
-        'utilizadores': utilizadores_reais, # <-- Enviado para o HTML
+        'utilizadores': utilizadores_reais,
         'ficheiros': ficheiros_anexados
     }
     return render(request, 'utilizadores/requestform.html', contexto)
 
+
 def apagar_pedido(request, id_pedido):
     eliminar_pedido(id_pedido)
     return redirect('lista_pedidos')
+
+
+# =====================================================================
+# 4. DASHBOARD ESTATÍSTICO - FICHA 9
+# =====================================================================
+
+def dashboard_estatisticas(request):
+    """Executa as 5 queries analíticas e renderiza o painel geral"""
+    nis2 = obter_conformidade_nis2()
+    incidentes = obter_top5_incidentes()
+    documentos = obter_documentos_por_mes()
+    perfis = obter_distribuicao_perfis()
+    tickets = obter_tempo_medio_tickets()
+
+    contexto = {
+        'nis2': nis2,
+        'incidentes': incidentes,
+        'documentos': documentos,
+        'perfis': perfis,
+        'tickets': tickets
+    }
+    return render(request, 'utilizadores/dashboard.html', contexto)

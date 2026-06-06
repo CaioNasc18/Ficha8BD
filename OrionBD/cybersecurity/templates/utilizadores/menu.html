@@ -48,6 +48,13 @@
         .btn-secondary:hover {
             background-color: #218838;
         }
+        /* Cor de destaque para a Ficha 9 */
+        .btn-dashboard {
+            background-color: #d69e2e;
+        }
+        .btn-dashboard:hover {
+            background-color: #b7791f;
+        }
     </style>
 </head>
 <body>
@@ -62,6 +69,11 @@
             
             <a href="{% url 'lista_pedidos' %}" class="btn-link btn-secondary">
                 📋 Gerir Pedidos / Requests (requestlist.html)
+            </a>
+
+            <!-- ADICIONADO O ATALHO PARA A FICHA 9 -->
+            <a href="{% url 'dashboard_estatisticas' %}" class="btn-link btn-dashboard">
+                📊 Dashboard Analítico (Ficha 9)
             </a>
         </div>
     </div>

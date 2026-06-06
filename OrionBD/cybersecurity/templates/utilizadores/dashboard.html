@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard de Cibersegurança - Ficha 9</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 30px; background-color: #f4f6f9; color: #333; }
+        h1 { color: #1a365d; border-bottom: 2px solid #1a365d; padding-bottom: 10px; }
+        h2 { color: #2c5282; margin-top: 40px; margin-bottom: 15px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; background-color: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        th, td { padding: 12px; text-align: left; border: 1px solid #e2e8f0; }
+        th { background-color: #2b6cb0; color: white; font-weight: bold; }
+        tr:nth-child(even) { background-color: #f7fafc; }
+        .btn-voltar { display: inline-block; padding: 10px 15px; background-color: #4a5568; color: white; text-decoration: none; border-radius: 4px; margin-bottom: 20px; }
+        .btn-voltar:hover { background-color: #2d3748; }
+        .badge { padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
+        .conforme { background-color: #c6f6d5; color: #22543d; }
+        .avaliacao { background-color: #feebc8; color: #744210; }
+        .pendente { background-color: #fed7d7; color: #742a2a; }
+    </style>
+</head>
+<body>
+
+    <h1>Dashboard Analítico de Cibersegurança</h1>
+    <a href="{% url 'menu_principal' %}" class="btn-voltar">&larr; Voltar ao Menu Principal</a>
+
+    <!-- 1. Estado de Conformidade NIS2 por Empresa -->
+    <h2>1. Estado de Conformidade NIS2 por Empresa</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Nome da Empresa</th>
+                <th>Estado de Conformidade NIS2</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in nis2 %}
+            <tr>
+                <td>{{ item.nome_da_empresa }}</td>
+                <td>
+                    {% if item.estado_nis2 == 'Conforme' %}
+                        <span class="badge conforme">Conforme</span>
+                    {% elif item.estado_nis2 == 'Em avaliação' %}
+                        <span class="badge avaliacao">Em avaliação</span>
+                    {% else %}
+                        <span class="badge pendente">Com pendências</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="2">Sem dados de conformidade registados.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- 2. Top 5 Clientes com Mais Incidentes Registados -->
+    <h2>2. Top 5 Clientes com Mais Incidentes Registados</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Posição</th>
+                <th>Cliente / Empresa</th>
+                <th>Total de Incidentes (Request Type 1)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in incidentes %}
+            <tr>
+                <td><strong>#{{ forloop.counter }}</strong></td>
+                <td>{{ item.cliente }}</td>
+                <td>{{ item.total_incidentes }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="3">Nenhum incidente de segurança registado até ao momento.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- 3. Total de Documentos Submetidos por Cliente e por Mês -->
+    <h2>3. Total de Documentos Submetidos por Cliente e por Mês</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Cliente / Empresa</th>
+                <th>Mês de Referência</th>
+                <th>Quantidade de Ficheiros Submetidos</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in documentos %}
+            <tr>
+                <td>{{ item.cliente }}</td>
+                <td>{{ item.mes }}</td>
+                <td>{{ item.total_documentos }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="3">Nenhum ficheiro/documento anexado aos pedidos.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- 4. Distribuição de Utilizadores por Perfil -->
+    <h2>4. Distribuição de Utilizadores por Perfil de Acesso</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Perfil</th>
+                <th>Total de Utilizadores Registados</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in perfis %}
+            <tr>
+                <td>{{ item.perfil }}</td>
+                <td>{{ item.total }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="2">Sem dados de utilizadores na base de dados.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- 5. Estado dos Pedidos e Tempo Médio de Resolução -->
+    <h2>5. Estado dos Pedidos/Tickets e Tempo Médio de Resolução</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Estado do Ticket (Status)</th>
+                <th>Total de Pedidos</th>
+                <th>Tempo Médio de Resolução (Horas)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in tickets %}
+            <tr>
+                <td>{{ item.status }}</td>
+                <td>{{ item.total }}</td>
+                <td>{% if item.tempo_medio_horas %}{{ item.tempo_medio_horas }} h{% else %}N/A (Em aberto){% endif %}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="3">Nenhum ticket ou pedido de suporte registado.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</body>
+</html>

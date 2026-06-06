@@ -10,9 +10,9 @@ from .basedados import (
     atualizar_pedido, eliminar_pedido, adicionar_ficheiro_pedido, listar_ficheiros_de_pedido,
     # Métodos do Dashboard (Ficha 9)
     obter_conformidade_nis2, obter_top5_incidentes, obter_documentos_por_mes,
-    obter_distribuicao_perfis, obter_tempo_medio_tickets
-    # Métodos das Empresas
-    obter_todas_empresas, criar_empresa, obter_empresa_por_id, atualizar_empresa, eliminar_empresa, listar_empresas,
+    obter_distribuicao_perfis, obter_tempo_medio_tickets,
+    # Métodos das Empresas (Ficha 8 - Adicionais)
+    obter_todas_empresas, criar_empresa, obter_empresa_por_id, atualizar_empresa, eliminar_empresa
 )
 
 # =====================================================================
@@ -156,13 +156,15 @@ def dashboard_estatisticas(request):
         'tickets': tickets
     }
     return render(request, 'utilizadores/dashboard.html', contexto)
-#EMPRESAS
+
+
+# =====================================================================
+# 5. GESTÃO DE EMPRESAS (COMPANIES)
+# =====================================================================
 
 # 1. LISTAR EMPRESAS
-def listar_empresas(request):
-    # obter_todas_empresas() é a função SQL que devolve o fetchall()
+def listar_empresas_view(request):
     empresas_do_banco = obter_todas_empresas() 
-    
     return render(request, 'utilizadores/empresas.html', {'empresas': empresas_do_banco})
 
 
@@ -170,26 +172,23 @@ def listar_empresas(request):
 def criar_empresa_view(request):
     if request.method == "POST":
         nome = request.POST.get('nome')
-        nomeResponsavelSeg = request.POST.get('nomeResponsavelSeg')
-        emailResponsavelSeg = request.POST.get('emailResponsavelSeg')
-        telefoneResponsavelSeg = request.POST.get('telefoneResponsavelSeg')
-        nomeContactoPerm = request.POST.get('nomeContactoPerm')
-        emailContactoPerm = request.POST.get('emailContactoPerm')
-        telefoneContactoPerm = request.POST.get('telefoneContactoPerm')
+        nomeResponsavelSeg = request.POST.get('nomeResponsavelSeg') or None
+        emailResponsavelSeg = request.POST.get('emailResponsavelSeg') or None
+        telefoneResponsavelSeg = request.POST.get('telefoneResponsavelSeg') or None
+        nomeContactoPerm = request.POST.get('nomeContactoPerm') or None
+        emailContactoPerm = request.POST.get('emailContactoPerm') or None
+        telefoneContactoPerm = request.POST.get('telefoneContactoPerm') or None
         
-        # Chama a tua função SQL de inserção
         criar_empresa(nome, nomeResponsavelSeg, emailResponsavelSeg, telefoneResponsavelSeg, nomeContactoPerm, emailContactoPerm, telefoneContactoPerm)
         
         messages.success(request, "Empresa criada com sucesso!")
-        return redirect('empresas') # Redireciona para a lista
+        return redirect('empresas') 
         
-    # CORREÇÃO DEFINITIVA: Nome exato do teu ficheiro HTML
     return render(request, 'utilizadores/criar_empresa.html')
 
 
 # 3. EDITAR EMPRESA
 def editar_empresa_view(request, id_empresa):
-    # Vai buscar os dados atuais da empresa para preencher o formulário
     empresa = obter_empresa_por_id(id_empresa)
     
     if not empresa:
@@ -198,20 +197,19 @@ def editar_empresa_view(request, id_empresa):
 
     if request.method == "POST":
         nome = request.POST.get('nome')
-        nomeResponsavelSeg = request.POST.get('nomeResponsavelSeg')
-        emailResponsavelSeg = request.POST.get('emailResponsavelSeg')
-        telefoneResponsavelSeg = request.POST.get('telefoneResponsavelSeg')
-        nomeContactoPerm = request.POST.get('nomeContactoPerm')
-        emailContactoPerm = request.POST.get('emailContactoPerm')
-        telefoneContactoPerm = request.POST.get('telefoneContactoPerm')
+        nomeResponsavelSeg = request.POST.get('nomeResponsavelSeg') or None
+        emailResponsavelSeg = request.POST.get('emailResponsavelSeg') or None
+        telefoneResponsavelSeg = request.POST.get('telefoneResponsavelSeg') or None
+        nomeContactoPerm = request.POST.get('nomeContactoPerm') or None
+        emailContactoPerm = request.POST.get('emailContactoPerm') or None
+        telefoneContactoPerm = request.POST.get('telefoneContactoPerm') or None
         
-        # Chama a tua função SQL de UPDATE
         atualizar_empresa(id_empresa, nome, nomeResponsavelSeg, emailResponsavelSeg, telefoneResponsavelSeg, nomeContactoPerm, emailContactoPerm, telefoneContactoPerm)
         
         messages.success(request, "Empresa atualizada com sucesso!")
         return redirect('empresas')
 
-    return render(request, 'utilizadores/empresas.html', {'empresa': empresa})
+    return render(request, 'utilizadores/criar_empresa.html', {'empresa': empresa})
 
 
 # 4. APAGAR EMPRESA
@@ -219,5 +217,3 @@ def apagar_empresa_view(request, id_empresa):
     eliminar_empresa(id_empresa)
     messages.success(request, "Empresa eliminada com sucesso!")
     return redirect('empresas')
-
-

@@ -27,4 +27,12 @@ urlpatterns = [
     # 4. ROTA DO DASHBOARD ANALÍTICO (ADICIONADA PARA A FICHA 9)
     # =====================================================================
     path('dashboard/', views.dashboard_estatisticas, name='dashboard_estatisticas'),
+    # Empresas
+
+    # NOVO: Rotas para o CRUD de Empresas
+   # Em cybersecurity/urls.py (Linha 30)
+    path('empresas/', views.listar_empresas, name='empresas'), #
+    path('empresas/nova/', views.criar_empresa_view, name='criar_empresa'),
+    path('empresas/editar/<int:id_empresa>/', views.editar_empresa_view, name='editar_empresa'),
+    path('empresas/apagar/<int:id_empresa>/', views.apagar_empresa_view, name='apagar_empresa'),
 ]

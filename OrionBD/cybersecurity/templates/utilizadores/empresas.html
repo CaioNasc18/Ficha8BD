@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Empresas</title>
+</head>
+<body>
+    <h2>Empresas Registadas</h2>
+    <p><a href="{% url 'criar_empresa' %}">[+] Adicionar Nova Empresa</a></p>
+
+    <table border="1" cellpadding="5" cellspacing="0">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nome Empresa</th>
+                <th>Responsável Segurança</th>
+                <th>Email Resp. Seg.</th>
+                <th>Telefone Resp. Seg.</th>
+                <th>Contacto Permanente</th>
+                <th>Email Cont. Perm.</th>
+                <th>Telefone Cont. Perm.</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for empresa in empresas %}
+            <tr>
+                <td>{{ empresa.0 }}</td> <td>{{ empresa.1 }}</td> <td>{{ empresa.2 }}</td> <td>{{ empresa.3 }}</td> <td>{{ empresa.4|default:"-" }}</td> <td>{{ empresa.5 }}</td> <td>{{ empresa.6 }}</td> <td>{{ empresa.7|default:"-" }}</td> <td>
+                    <a href="{% url 'editar_empresa' empresa.0 %}">Editar</a> | 
+                    <a href="{% url 'apagar_empresa' empresa.0 %}" onclick="return confirm('Tem a certeza que deseja eliminar esta empresa?');">Apagar</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="9">Nenhuma empresa encontrada no banco de dados.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

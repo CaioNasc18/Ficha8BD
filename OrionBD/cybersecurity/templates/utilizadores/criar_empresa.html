@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>{% if empresa %}Editar{% else %}Criar{% endif %} Empresa</title>
+</head>
+<body>
+    <h2>{% if empresa %}Editar Empresa (ID: {{ empresa.0 }}){% else %}Nova Empresa{% endif %}</h2>
+    
+    <form method="POST">
+        {% csrf_token %}
+        
+        <p>
+            <label>Nome da Empresa:</label><br>
+            <input type="text" name="nome" value="{{ empresa.1|default:'' }}" required>
+        </p>
+        
+        <p>
+            <label>Nome do Responsável de Segurança:</label><br>
+            <input type="text" name="nomeResponsavelSeg" value="{{ empresa.2|default:'' }}" required>
+        </p>
+
+        <p>
+            <label>Email do Responsável de Segurança:</label><br>
+            <input type="email" name="emailResponsavelSeg" value="{{ empresa.3|default:'' }}" required>
+        </p>
+        
+        <p>
+            <label>Telefone do Responsável de Segurança:</label><br>
+            <input type="text" name="telefoneResponsavelSeg" value="{{ empresa.4|default:'' }}">
+        </p>
+
+        <p>
+            <label>Nome do Contacto Permanente:</label><br>
+            <input type="text" name="nomeContactoPerm" value="{{ empresa.5|default:'' }}" required>
+        </p>
+
+        <p>
+            <label>Email do Contacto Permanente:</label><br>
+            <input type="email" name="emailContactoPerm" value="{{ empresa.6|default:'' }}" required>
+        </p>
+
+        <p>
+            <label>Telefone do Contacto Permanente:</label><br>
+            <input type="text" name="telefoneContactoPerm" value="{{ empresa.7|default:'' }}">
+        </p>
+        
+        <button type="submit">Gravar Empresa</button>
+        <a href="{% url 'empresas' %}">Voltar para a Lista</a>
+    </form>
+</body>
+</html>
